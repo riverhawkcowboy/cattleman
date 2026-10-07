@@ -446,8 +446,6 @@ BEGIN
   END LOOP;
 END $$;
 
-COMMIT;
-
 -- Immutable evidence protections
 CREATE OR REPLACE FUNCTION prevent_mutation()
 RETURNS trigger AS $$
@@ -471,3 +469,5 @@ FOR EACH ROW EXECUTE FUNCTION prevent_mutation();
 CREATE TRIGGER trg_audit_logs_no_update
 BEFORE UPDATE OR DELETE ON audit_logs
 FOR EACH ROW EXECUTE FUNCTION prevent_mutation();
+
+COMMIT;
