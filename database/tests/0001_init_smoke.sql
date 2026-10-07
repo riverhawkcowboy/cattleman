@@ -104,6 +104,13 @@ BEGIN
     blocked := SQLERRM = 'Table assessment_attempts is immutable; use compensating records';
   END;
   IF NOT blocked THEN RAISE EXCEPTION 'assessment_attempts update was not blocked'; END IF;
+  blocked := FALSE;
+  BEGIN
+    DELETE FROM assessment_attempts WHERE id = attempt_id;
+  EXCEPTION WHEN OTHERS THEN
+    blocked := SQLERRM = 'Table assessment_attempts is immutable; use compensating records';
+  END;
+  IF NOT blocked THEN RAISE EXCEPTION 'assessment_attempts delete was not blocked'; END IF;
 
   blocked := FALSE;
   BEGIN
@@ -112,6 +119,13 @@ BEGIN
     blocked := SQLERRM = 'Table attempt_answers is immutable; use compensating records';
   END;
   IF NOT blocked THEN RAISE EXCEPTION 'attempt_answers delete was not blocked'; END IF;
+  blocked := FALSE;
+  BEGIN
+    UPDATE attempt_answers SET answer_payload = '{"test":true}'::jsonb WHERE id = answer_id;
+  EXCEPTION WHEN OTHERS THEN
+    blocked := SQLERRM = 'Table attempt_answers is immutable; use compensating records';
+  END;
+  IF NOT blocked THEN RAISE EXCEPTION 'attempt_answers update was not blocked'; END IF;
 
   blocked := FALSE;
   BEGIN
@@ -120,6 +134,13 @@ BEGIN
     blocked := SQLERRM = 'Table earned_credits is immutable; use compensating records';
   END;
   IF NOT blocked THEN RAISE EXCEPTION 'earned_credits update was not blocked'; END IF;
+  blocked := FALSE;
+  BEGIN
+    DELETE FROM earned_credits WHERE id = credit_id;
+  EXCEPTION WHEN OTHERS THEN
+    blocked := SQLERRM = 'Table earned_credits is immutable; use compensating records';
+  END;
+  IF NOT blocked THEN RAISE EXCEPTION 'earned_credits delete was not blocked'; END IF;
 
   blocked := FALSE;
   BEGIN
@@ -128,6 +149,13 @@ BEGIN
     blocked := SQLERRM = 'Table audit_logs is immutable; use compensating records';
   END;
   IF NOT blocked THEN RAISE EXCEPTION 'audit_logs delete was not blocked'; END IF;
+  blocked := FALSE;
+  BEGIN
+    UPDATE audit_logs SET reason = 'attempted mutation' WHERE id = audit_id;
+  EXCEPTION WHEN OTHERS THEN
+    blocked := SQLERRM = 'Table audit_logs is immutable; use compensating records';
+  END;
+  IF NOT blocked THEN RAISE EXCEPTION 'audit_logs update was not blocked'; END IF;
 END $$;
 
 ROLLBACK;
